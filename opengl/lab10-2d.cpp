@@ -122,6 +122,7 @@ void Keyboard(int key, int x, int y) {
 void Reshape(int width, int height) {
     w = width;
     h = height;
+    glViewport(0, 0, w, h);
 }
 
 int main(int argc, char* argv[]) {
