@@ -3,7 +3,7 @@ project(opengl)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(opengl lab10-3d.cpp)
+add_executable(opengl lab11.cpp)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
