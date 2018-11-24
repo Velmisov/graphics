@@ -13,18 +13,9 @@ int mode = 0;
 // Функция вызывается перед вхождением в главный цикл
 void Init() {
     glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    GLfloat pos[4] = {0, 10, 2, 1};
-//    glLightfv(GL_LIGHT0, GL_POSITION, pos);
-//    glEnable(GL_LIGHTING);
-//    glEnable(GL_LIGHT0);
-//    glEnable(GL_COLOR_MATERIAL);
 
-    glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
-    glutSwapBuffers();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 // Функция вызывается каждый кадр для его отрисовки
@@ -115,7 +106,7 @@ void Update() {
     glutSwapBuffers();
 }
 
-// Управление мышью
+// Переключение вида вращения
 void Mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) {
         rotate_x = rotate_y = rotate_z = 0;
@@ -159,7 +150,7 @@ void Rotate(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-
+// Переключение вида камеры
 void Keyboard(unsigned char key, int x, int y) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -197,6 +188,7 @@ int main(int argc, char* argv[]) {
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
     glutCreateWindow("3d objects");
+
     Init();
 
     glutDisplayFunc(Update);
