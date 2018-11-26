@@ -4,12 +4,12 @@
 
 static int w = 0, h = 0;
 
-double rotate_x = 0.;
-double rotate_y = 0.;
-double rotate_z = 0.;
+float camera_rotate_x = 0.f;
+float camera_rotate_z = 0.f;
+float camera_dist = 0.f;
 
 // Функция вызывается перед вхождением в главный цикл
-void Init() {
+void init() {
     glClearColor(0, 0, 0, 1);
 
     glEnable(GL_DEPTH_TEST);
@@ -17,93 +17,110 @@ void Init() {
 }
 
 // Функция вызывается каждый кадр для его отрисовки
-void Update() {
+void update() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     glColor3f(1.f, 1.f, 1.f);
-    glBegin(GL_QUADS);
-    glVertex3f(-1.f, -1.f, 0.f);
-    glVertex3f(-1.f, 1.f, 0.f);
-    glVertex3f(1.f, 1.f, 0.f);
-    glVertex3f(1.f, -1.f, 0.f);
-    glEnd();
+    glRectf(-10.f, -10.f, 10.f, 10.f);
+
+    glTranslatef(0.f, 0.f, 0.5f);
+    glColor3f(0.f, 0.f, 1.f);
+    glutSolidCube(1.f);
 
     glFlush();
     glutSwapBuffers();
 }
 
-// Переключение вида вращения
-void Mouse(int button, int state, int x, int y) {
+// Обновление камеры
+void updateCamera() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(65.f, (float)w / h, 0.1f, 1000.f);
+    gluLookAt(0., -20., 5, 0., 0., 0., 0., 1., 0.);
+    glTranslatef(0.f, 20 * camera_dist, -5 * camera_dist);
+    glRotatef(camera_rotate_x, 1.f, 0.f, 0.f);
+    glRotatef(camera_rotate_z, 0.f, 0.f, 1.f);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+// Управление мышкой
+void mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) {
-        rotate_x = rotate_y = rotate_z = 0;
         switch (button) {
             case GLUT_LEFT_BUTTON:
                 break;
             case GLUT_RIGHT_BUTTON:
                 break;
+            default:
+                if (button == 3)
+                    camera_dist -= 0.1f;
+                else if (button == 4)
+                    camera_dist += 0.1f;
+                else return;
+
+                updateCamera();
         }
     }
     glutPostRedisplay();
 }
 
-// Управление вращениями
-void Rotate(int key, int x, int y) {
+// Управление машинкой
+void driving(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            rotate_x += 5;
             break;
         case GLUT_KEY_DOWN:
-            rotate_x -= 5;
             break;
 
         case GLUT_KEY_RIGHT:
-            rotate_y += 5;
             break;
         case GLUT_KEY_LEFT:
-            rotate_y -= 5;
             break;
 
-        case GLUT_KEY_PAGE_UP:
-            rotate_z += 5;
-            break;
-        case GLUT_KEY_PAGE_DOWN:
-            rotate_z -= 5;
-            break;
-
+        default:
+            return;
     }
     glutPostRedisplay();
 }
 
-// Переключение вида камеры
-void Keyboard(unsigned char key, int x, int y) {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+// Управление клавиатурой
+void keyboard(unsigned char key, int x, int y) {
     switch (key) {
+        case 'a':
+            camera_rotate_z += 5;
+            updateCamera();
+            break;
+        case 'd':
+            camera_rotate_z -= 5;
+            updateCamera();
+            break;
+        case 'w':
+            camera_rotate_x += 0.5f;
+            updateCamera();
+            break;
+        case 's':
+            camera_rotate_x -= 0.5f;
+            updateCamera();
+            break;
         case 'o':
             glOrtho(-2.f, 2.f, -2.f, 2.f, -2.f, 2.f);
             break;
         default:
-            gluPerspective(65.f, (float)w / h, 1.f, 1000.f);
-            gluLookAt(0., -2., 2., 0., 0., 0., 0., 1., 0.);
             break;
     }
-    glMatrixMode(GL_MODELVIEW);
     glutPostRedisplay();
 }
 
-// Функция вызывается при изменении размеров окна
-void Reshape(int width, int height) {
+// Вызывается при изменении размеров окна
+void reshape(int width, int height) {
     w = width;
     h = height;
+    
     glViewport(0, 0, w, h);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(65.f, (float)w / h, 1.f, 1000.f);
-    gluLookAt(0., -2., 2., 0., 0., 0., 0., 1., 0.);
-    glMatrixMode(GL_MODELVIEW);
+    updateCamera();
 }
 
 int main(int argc, char* argv[]) {
@@ -116,15 +133,15 @@ int main(int argc, char* argv[]) {
 
     glutCreateWindow("texture and lightning");
 
-    Init();
+    init();
 
-    glutReshapeFunc(Reshape);
+    glutReshapeFunc(reshape);
 
-    glutDisplayFunc(Update);
+    glutDisplayFunc(update);
 
-    glutSpecialFunc(Rotate);
-    glutKeyboardFunc(Keyboard);
-    glutMouseFunc(Mouse);
+    glutSpecialFunc(driving);
+    glutKeyboardFunc(keyboard);
+    glutMouseFunc(mouse);
 
     glutMainLoop();
 
