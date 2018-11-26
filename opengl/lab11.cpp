@@ -76,12 +76,12 @@ void mouse(int button, int state, int x, int y) {
 void driving(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            car_y += sin(car_rotate_z / 180 * PI);
-            car_x += cos(car_rotate_z / 180 * PI);
+            car_x += sin(-car_rotate_z / 180 * PI);
+            car_y += cos(-car_rotate_z / 180 * PI);
             break;
         case GLUT_KEY_DOWN:
-            car_y -= sin(car_rotate_z / 180 * PI);
-            car_x -= cos(car_rotate_z / 180 * PI);
+            car_x -= sin(-car_rotate_z / 180 * PI);
+            car_y -= cos(-car_rotate_z / 180 * PI);
             break;
 
         case GLUT_KEY_RIGHT:
