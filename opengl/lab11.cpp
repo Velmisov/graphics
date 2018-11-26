@@ -1,12 +1,17 @@
 #include <GL/freeglut.h>
-#include <time.h>
-#include <stdlib.h>
+#include <math.h>
+
+const double PI = acos(-1);
 
 static int w = 0, h = 0;
 
 float camera_rotate_x = 0.f;
 float camera_rotate_z = 0.f;
 float camera_dist = 0.f;
+
+float car_x = 0.f;
+float car_y = 0.f;
+float car_rotate_z = 0.f;
 
 // Функция вызывается перед вхождением в главный цикл
 void init() {
@@ -25,7 +30,8 @@ void update() {
     glColor3f(1.f, 1.f, 1.f);
     glRectf(-10.f, -10.f, 10.f, 10.f);
 
-    glTranslatef(0.f, 0.f, 0.5f);
+    glTranslatef(car_x, car_y, 0.5f);
+    glRotatef(car_rotate_z, 0.f, 0.f, 1.f);
     glColor3f(0.f, 0.f, 1.f);
     glutSolidCube(1.f);
 
@@ -70,13 +76,19 @@ void mouse(int button, int state, int x, int y) {
 void driving(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
+            car_y += sin(car_rotate_z / 180 * PI);
+            car_x += cos(car_rotate_z / 180 * PI);
             break;
         case GLUT_KEY_DOWN:
+            car_y -= sin(car_rotate_z / 180 * PI);
+            car_x -= cos(car_rotate_z / 180 * PI);
             break;
 
         case GLUT_KEY_RIGHT:
+            car_rotate_z -= 2.f;
             break;
         case GLUT_KEY_LEFT:
+            car_rotate_z += 2.f;
             break;
 
         default:
@@ -124,8 +136,6 @@ void reshape(int width, int height) {
 }
 
 int main(int argc, char* argv[]) {
-    srand(time(NULL));
-
     glutInit(&argc, argv);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(800, 800);
