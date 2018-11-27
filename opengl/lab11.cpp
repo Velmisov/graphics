@@ -21,18 +21,76 @@ void init() {
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
-    glShadeModel(GL_SMOOTH);
-
     const GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
     const GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 
+    // camera light
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05);
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.001);
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 60.f);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 30.f);
+
+    // lamps
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT3, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT4, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT4, GL_SPECULAR, light_specular);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+}
+
+void drawFloor() {
+    glColor3f(1, 1, 1);
+    glBegin(GL_QUADS);
+    float step = 0.1f;
+    for (float x = -10.f; x < 10.f; x += step) {
+        for (float y = -10.f; y < 10.f; y += step) {
+            glNormal3f(0, 0, 1);
+            glVertex3f(x, y, 0);
+            glNormal3f(0, 0, 1);
+            glVertex3f(x, y + step, 0);
+            glNormal3f(0, 0, 1);
+            glVertex3f(x + step, y + step, 0);
+            glNormal3f(0, 0, 1);
+            glVertex3f(x + step, y, 0);
+        }
+    }
+    glEnd();
+}
+
+void drawLamps() {
+    const GLfloat light_pos[] = {0.f, 0.f, 2.1f, 1.f};
+
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glPushMatrix();
+    glTranslatef(-4, -4, 0);
+    glutSolidCylinder(0.1, 2, 10, 10);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-4, 4, 0);
+    glutSolidCylinder(0.1, 2, 10, 10);
+    glLightfv(GL_LIGHT2, GL_POSITION, light_pos);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(4, 4, 0);
+    glutSolidCylinder(0.1, 2, 10, 10);
+    glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(4, -4, 0);
+    glutSolidCylinder(0.1, 2, 10, 10);
+    glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
+    glPopMatrix();
 }
 
 // Функция вызывается каждый кадр для его отрисовки
@@ -41,17 +99,8 @@ void update() {
 
     glLoadIdentity();
 
-    glColor3f(1, 1, 1);
-    glBegin(GL_QUADS);
-    glNormal3f(0, 0, 1);
-    glVertex3f(-10, -10, 0);
-    glNormal3f(0, 0, 1);
-    glVertex3f(-10, 10, 0);
-    glNormal3f(0, 0, 1);
-    glVertex3f(10, 10, 0);
-    glNormal3f(0, 0, 1);
-    glVertex3f(10, -10, 0);
-    glEnd();
+    drawFloor();
+    drawLamps();
 
     glTranslatef(car_x, car_y, 0.5f);
     glRotatef(car_rotate_z, 0.f, 0.f, 1.f);
@@ -155,7 +204,7 @@ void driving(int key, int x, int y) {
         default:
             return;
     }
-    updateCamera();
+    //updateCamera();
     glutPostRedisplay();
 }
 
@@ -181,6 +230,30 @@ void keyboard(unsigned char key, int x, int y) {
         case 's':
             camera_rotate_x -= 2;
             updateCamera();
+            break;
+        case '1':
+            if (glIsEnabled(GL_LIGHT1))
+                glDisable(GL_LIGHT1);
+            else
+                glEnable(GL_LIGHT1);
+            break;
+        case '2':
+            if (glIsEnabled(GL_LIGHT2))
+                glDisable(GL_LIGHT2);
+            else
+                glEnable(GL_LIGHT2);
+            break;
+        case '3':
+            if (glIsEnabled(GL_LIGHT3))
+                glDisable(GL_LIGHT3);
+            else
+                glEnable(GL_LIGHT3);
+            break;
+        case '4':
+            if (glIsEnabled(GL_LIGHT4))
+                glDisable(GL_LIGHT4);
+            else
+                glEnable(GL_LIGHT4);
             break;
         default:
             break;
