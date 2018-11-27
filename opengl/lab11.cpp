@@ -1,7 +1,5 @@
 #include <GL/freeglut.h>
 #include <math.h>
-#include <iostream>
-using namespace std;
 
 const double PI = acos(-1);
 
@@ -65,13 +63,13 @@ void drawFloor() {
 }
 
 void drawLamps() {
-    const GLfloat light_pos[] = {0.f, 2.1f, 0.f, 1.f};
+    const GLfloat light_pos[] = {0.f, 4.1f, 0.f, 1.f};
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glPushMatrix();
     glTranslatef(-4, 0, -4);
     glRotatef(-90.f, 1, 0, 0);
-    glutSolidCylinder(0.1, 2, 10, 10);
+    glutSolidCylinder(0.1, 4, 10, 10);
     glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
     glPopMatrix();
@@ -79,7 +77,7 @@ void drawLamps() {
     glPushMatrix();
     glTranslatef(-4, 0, 4);
     glRotatef(-90.f, 1, 0, 0);
-    glutSolidCylinder(0.1, 2, 10, 10);
+    glutSolidCylinder(0.1, 4, 10, 10);
     glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT2, GL_POSITION, light_pos);
     glPopMatrix();
@@ -87,7 +85,7 @@ void drawLamps() {
     glPushMatrix();
     glTranslatef(4, 0, 4);
     glRotatef(-90.f, 1, 0, 0);
-    glutSolidCylinder(0.1, 2, 10, 10);
+    glutSolidCylinder(0.1, 4, 10, 10);
     glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
     glPopMatrix();
@@ -95,17 +93,122 @@ void drawLamps() {
     glPushMatrix();
     glTranslatef(4, 0, -4);
     glRotatef(-90.f, 1, 0, 0);
-    glutSolidCylinder(0.1, 2, 10, 10);
+    glutSolidCylinder(0.1, 4, 10, 10);
     glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
     glPopMatrix();
 }
 
 void drawCar() {
-    glTranslatef(car_x, 0.5f, car_z);
+    // ------------- body -------------
+    glTranslatef(car_x, 0.2f, car_z);
     glRotatef(car_rotate_y, 0, 1, 0);
-    glColor3f(0, 0, 1);
-    glutSolidCube(1.f);
+
+    // left
+    glBegin(GL_POLYGON);
+    glNormal3f(0, 0, -1);
+    glVertex3f(-1, 0, -0.5f);
+    glNormal3f(0, 0, -1);
+    glVertex3f(-1, 1, -0.5f);
+    glNormal3f(0, 0, -1);
+    glVertex3f(1, 1, -0.5f);
+    glNormal3f(0, 0, -1);
+    glVertex3f(1.5f, 0.5f, -0.5f);
+    glNormal3f(0, 0, -1);
+    glVertex3f(1.5f, 0, -0.5f);
+    glEnd();
+
+    // right
+    glBegin(GL_POLYGON);
+    glNormal3f(0, 0, 1);
+    glVertex3f(-1, 0, 0.5f);
+    glNormal3f(0, 0, 1);
+    glVertex3f(-1, 1, 0.5f);
+    glNormal3f(0, 0, 1);
+    glVertex3f(1, 1, 0.5f);
+    glNormal3f(0, 0, 1);
+    glVertex3f(1.5f, 0.5f, 0.5f);
+    glNormal3f(0, 0, 1);
+    glVertex3f(1.5f, 0, 0.5f);
+    glEnd();
+
+    // back
+    glBegin(GL_POLYGON);
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-1, 0, -0.5f);
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-1, 1, -0.5f);
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-1, 1, 0.5f);
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-1, 0, 0.5f);
+    glEnd();
+
+    // roof
+    glBegin(GL_POLYGON);
+    glNormal3f(0, 1, 0);
+    glVertex3f(-1, 1, -0.5f);
+    glNormal3f(0, 1, 0);
+    glVertex3f(-1, 1, 0.5f);
+    glNormal3f(0, 1, 0);
+    glVertex3f(1, 1, 0.5f);
+    glNormal3f(0, 1, 0);
+    glVertex3f(1, 1, -0.5f);
+    glEnd();
+
+    // front
+    glBegin(GL_POLYGON);
+    glNormal3f(1, 0, 0);
+    glVertex3f(1.5f, 0, -0.5f);
+    glNormal3f(1, 0, 0);
+    glVertex3f(1.5f, 0.5f, -0.5f);
+    glNormal3f(1, 0, 0);
+    glVertex3f(1.5f, 0.5f, 0.5f);
+    glNormal3f(1, 0, 0);
+    glVertex3f(1.5f, 0, 0.5f);
+    glEnd();
+
+    // windscreen
+    GLdouble windscreen_norm[3] = {1, 1, 0};
+    double len = sqrt(2);
+    for (int i = 0; i < 3; ++i)
+        windscreen_norm[i] /= len;
+    glBegin(GL_POLYGON);
+    glNormal3dv(windscreen_norm);
+    glVertex3f(1.5f, 0.5f, -0.5f);
+    glNormal3dv(windscreen_norm);
+    glVertex3f(1, 1, -0.5f);
+    glNormal3dv(windscreen_norm);
+    glVertex3f(1, 1, 0.5f);
+    glNormal3dv(windscreen_norm);
+    glVertex3f(1.5f, 0.5f, 0.5f);
+    glEnd();
+
+    // ------------- wheels -------------
+    glColor3f(0, 0, 0);
+    // left front
+    glPushMatrix();
+    glTranslatef(1, 0.1f, -0.5f);
+    glutSolidTorus(0.1, 0.2, 10, 20);
+    glPopMatrix();
+
+    // right front
+    glPushMatrix();
+    glTranslatef(1, 0.1f, 0.5f);
+    glutSolidTorus(0.1, 0.2, 10, 20);
+    glPopMatrix();
+
+    // left back
+    glPushMatrix();
+    glTranslatef(-0.5f, 0.1f, -0.5f);
+    glutSolidTorus(0.1, 0.2, 10, 20);
+    glPopMatrix();
+
+    // right back
+    glPushMatrix();
+    glTranslatef(-0.5f, 0.1f, 0.5f);
+    glutSolidTorus(0.1, 0.2, 10, 20);
+    glPopMatrix();
 }
 
 // Функция вызывается каждый кадр для его отрисовки
@@ -122,6 +225,7 @@ void update() {
     glutSwapBuffers();
 }
 
+// Установка прожектора в камере
 void setCameraLight() {
     GLint viewport[4];
     GLdouble modelview_mat[16];
