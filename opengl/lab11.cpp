@@ -8,12 +8,12 @@ const double PI = acos(-1);
 static int w = 0, h = 0;
 
 float camera_rotate_x = 0.f;
-float camera_rotate_z = 0.f;
+float camera_rotate_y = 0.f;
 float camera_dist = 0.f;
 
 float car_x = 0.f;
-float car_y = 0.f;
-float car_rotate_z = 0.f;
+float car_z = 0.f;
+float car_rotate_y = 0.f;
 
 // Функция вызывается перед вхождением в главный цикл
 void init() {
@@ -48,49 +48,64 @@ void init() {
 void drawFloor() {
     glColor3f(1, 1, 1);
     glBegin(GL_QUADS);
-    float step = 0.1f;
+    float step = 0.05f;
     for (float x = -10.f; x < 10.f; x += step) {
-        for (float y = -10.f; y < 10.f; y += step) {
-            glNormal3f(0, 0, 1);
-            glVertex3f(x, y, 0);
-            glNormal3f(0, 0, 1);
-            glVertex3f(x, y + step, 0);
-            glNormal3f(0, 0, 1);
-            glVertex3f(x + step, y + step, 0);
-            glNormal3f(0, 0, 1);
-            glVertex3f(x + step, y, 0);
+        for (float z = -10.f; z < 10.f; z += step) {
+            glNormal3f(0, 1, 0);
+            glVertex3f(x, 0, z);
+            glNormal3f(0, 1, 0);
+            glVertex3f(x, 0, z + step);
+            glNormal3f(0, 1, 0);
+            glVertex3f(x + step, 0, z + step);
+            glNormal3f(0, 1, 0);
+            glVertex3f(x + step, 0, z);
         }
     }
     glEnd();
 }
 
 void drawLamps() {
-    const GLfloat light_pos[] = {0.f, 0.f, 2.1f, 1.f};
+    const GLfloat light_pos[] = {0.f, 2.1f, 0.f, 1.f};
 
     glColor3f(0.5f, 0.5f, 0.5f);
     glPushMatrix();
-    glTranslatef(-4, -4, 0);
+    glTranslatef(-4, 0, -4);
+    glRotatef(-90.f, 1, 0, 0);
     glutSolidCylinder(0.1, 2, 10, 10);
+    glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT1, GL_POSITION, light_pos);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-4, 4, 0);
+    glTranslatef(-4, 0, 4);
+    glRotatef(-90.f, 1, 0, 0);
     glutSolidCylinder(0.1, 2, 10, 10);
+    glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT2, GL_POSITION, light_pos);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(4, 4, 0);
+    glTranslatef(4, 0, 4);
+    glRotatef(-90.f, 1, 0, 0);
     glutSolidCylinder(0.1, 2, 10, 10);
+    glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT3, GL_POSITION, light_pos);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(4, -4, 0);
+    glTranslatef(4, 0, -4);
+    glRotatef(-90.f, 1, 0, 0);
     glutSolidCylinder(0.1, 2, 10, 10);
+    glRotatef(90.f, 1, 0, 0);
     glLightfv(GL_LIGHT4, GL_POSITION, light_pos);
     glPopMatrix();
+}
+
+void drawCar() {
+    glTranslatef(car_x, 0.5f, car_z);
+    glRotatef(car_rotate_y, 0, 1, 0);
+    glColor3f(0, 0, 1);
+    glutSolidCube(1.f);
 }
 
 // Функция вызывается каждый кадр для его отрисовки
@@ -101,11 +116,7 @@ void update() {
 
     drawFloor();
     drawLamps();
-
-    glTranslatef(car_x, car_y, 0.5f);
-    glRotatef(car_rotate_z, 0.f, 0.f, 1.f);
-    glColor3f(0.f, 0.f, 1.f);
-    glutSolidCube(1.f);
+    drawCar();
 
     glFlush();
     glutSwapBuffers();
@@ -147,10 +158,10 @@ void updateCamera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(65.f, (float)w / h, 0.1f, 1000.f);
-    gluLookAt(0., -20., 5, 0., 0., 0., 0., 1., 0.);
-    glTranslatef(0.f, 20 * camera_dist, -5 * camera_dist);
-    glRotatef(camera_rotate_x, 1.f, 0.f, 0.f);
-    glRotatef(camera_rotate_z, 0.f, 0.f, 1.f);
+    gluLookAt(0., 5., -20, 0., 0., 0., 0., 1., 0.);
+    glTranslatef(0.f, -5 * camera_dist, 20 * camera_dist);
+    glRotatef(camera_rotate_x, 1, 0, 0);
+    glRotatef(camera_rotate_y, 0, 1, 0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -186,25 +197,24 @@ void mouse(int button, int state, int x, int y) {
 void driving(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            car_x += sin(-car_rotate_z / 180 * PI);
-            car_y += cos(-car_rotate_z / 180 * PI);
+            car_z += sin(-car_rotate_y / 180 * PI);
+            car_x += cos(-car_rotate_y / 180 * PI);
             break;
         case GLUT_KEY_DOWN:
-            car_x -= sin(-car_rotate_z / 180 * PI);
-            car_y -= cos(-car_rotate_z / 180 * PI);
+            car_z -= sin(-car_rotate_y / 180 * PI);
+            car_x -= cos(-car_rotate_y / 180 * PI);
             break;
 
         case GLUT_KEY_RIGHT:
-            car_rotate_z -= 2.f;
+            car_rotate_y -= 5.f;
             break;
         case GLUT_KEY_LEFT:
-            car_rotate_z += 2.f;
+            car_rotate_y += 5.f;
             break;
 
         default:
             return;
     }
-    //updateCamera();
     glutPostRedisplay();
 }
 
@@ -212,23 +222,23 @@ void driving(int key, int x, int y) {
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'a':
-            camera_rotate_z += 5;
-            if (camera_rotate_z > 360)
-                car_rotate_z -= 360;
+            camera_rotate_y += 5;
+            if (camera_rotate_y > 360)
+                car_rotate_y -= 360;
             updateCamera();
             break;
         case 'd':
-            camera_rotate_z -= 5;
-            if (camera_rotate_z < -360)
-                camera_rotate_z += 360;
+            camera_rotate_y -= 5;
+            if (camera_rotate_y < -360)
+                camera_rotate_y += 360;
             updateCamera();
             break;
         case 'w':
-            camera_rotate_x += 2;
+            camera_rotate_x -= 2;
             updateCamera();
             break;
         case 's':
-            camera_rotate_x -= 2;
+            camera_rotate_x += 2;
             updateCamera();
             break;
         case '1':
