@@ -37,6 +37,16 @@ void init() {
     glLightfv(GL_LIGHT4, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT4, GL_SPECULAR, light_specular);
 
+    // headlights
+    glLightfv(GL_LIGHT5, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT5, GL_SPECULAR, light_specular);
+    glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, 0.1);
+    glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 45.f);
+    glLightfv(GL_LIGHT6, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT6, GL_SPECULAR, light_specular);
+    glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, 0.1);
+    glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 45.f);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
@@ -168,6 +178,22 @@ void drawCar() {
     glVertex3f(1.5f, 0, 0.5f);
     glEnd();
 
+    // headlights
+    const GLfloat headlight_pos[4] = {0.1f, 0.f, 0.f, 1.f};
+    const GLfloat headlight_spot_direction[4] = {1, 0, 0, 1};
+    glPushMatrix();
+    glTranslatef(1.5f, 0.25f, -0.25f);
+    //glutSolidSphere(0.1, 10, 10);
+    glLightfv(GL_LIGHT5, GL_POSITION, headlight_pos);
+    glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, headlight_spot_direction);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(1.5f, 0.25f, 0.25f);
+    //glutSolidSphere(0.1, 10, 10);
+    glLightfv(GL_LIGHT6, GL_POSITION, headlight_pos);
+    glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, headlight_spot_direction);
+    glPopMatrix();
+
     // windscreen
     GLdouble windscreen_norm[3] = {1, 1, 0};
     double len = sqrt(2);
@@ -283,6 +309,14 @@ void mouse(int button, int state, int x, int y) {
                     glEnable(GL_LIGHT0);
                 break;
             case GLUT_RIGHT_BUTTON:
+                if (glIsEnabled(GL_LIGHT5)) {
+                    glDisable(GL_LIGHT5);
+                    glDisable(GL_LIGHT6);
+                }
+                else {
+                    glEnable(GL_LIGHT5);
+                    glEnable(GL_LIGHT6);
+                }
                 break;
             default:
                 if (button == 3)
