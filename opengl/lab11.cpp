@@ -1,5 +1,7 @@
 #include <GL/freeglut.h>
+#include <SOIL/SOIL.h>
 #include <math.h>
+#include <cstdio>
 
 const double PI = acos(-1);
 
@@ -13,6 +15,18 @@ float car_x = 0.f;
 float car_z = 0.f;
 float car_rotate_y = 0.f;
 
+GLuint road_texture_id;
+
+void loadTextures() {
+    // floor texture
+    road_texture_id = SOIL_load_OGL_texture("../road.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+            SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+}
+
 // Функция вызывается перед вхождением в главный цикл
 void init() {
     glClearColor(0, 0, 0, 1);
@@ -21,6 +35,8 @@ void init() {
 
     const GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
     const GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+
+    loadTextures();
 
     // camera light
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05);
@@ -55,22 +71,42 @@ void init() {
 
 // Рисую пол
 void drawFloor() {
-    glColor3f(1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, road_texture_id);
+
     glBegin(GL_QUADS);
-    float step = 0.05f;
+    bool rotated = false;
+    float step = 0.5f;
     for (float x = -10.f; x < 10.f; x += step) {
         for (float z = -10.f; z < 10.f; z += step) {
-            glNormal3f(0, 1, 0);
-            glVertex3f(x, 0, z);
-            glNormal3f(0, 1, 0);
-            glVertex3f(x, 0, z + step);
-            glNormal3f(0, 1, 0);
-            glVertex3f(x + step, 0, z + step);
-            glNormal3f(0, 1, 0);
-            glVertex3f(x + step, 0, z);
+            if (rotated)
+                glTexCoord2f(0, 0);
+            else
+                glTexCoord2f(0, 1);
+            glNormal3f(0, 1, 0); glVertex3f(x, 0, z);
+            if (rotated)
+                glTexCoord2f(0, 1);
+            else
+                glTexCoord2f(1, 1);
+            glNormal3f(0, 1, 0); glVertex3f(x, 0, z + step);
+            if (rotated)
+                glTexCoord2f(1, 1);
+            else
+                glTexCoord2f(1, 0);
+            glNormal3f(0, 1, 0); glVertex3f(x + step, 0, z + step);
+            if (rotated)
+                glTexCoord2f(1, 0);
+            else
+                glTexCoord2f(0, 0);
+            glNormal3f(0, 1, 0); glVertex3f(x + step, 0, z);
+            rotated = !rotated;
         }
+        rotated = !rotated;
     }
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 // Рисую лампы
@@ -437,7 +473,7 @@ int main(int argc, char* argv[]) {
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(800, 800);
 
-    glutCreateWindow("texture and lightning");
+    glutCreateWindow("texture and lighting");
 
     init();
 
