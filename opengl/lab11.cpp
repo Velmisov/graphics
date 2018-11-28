@@ -40,12 +40,12 @@ void init() {
     // headlights
     glLightfv(GL_LIGHT5, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT5, GL_SPECULAR, light_specular);
-    glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, 0.1);
-    glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 45.f);
+    glLightf(GL_LIGHT5, GL_QUADRATIC_ATTENUATION, 0.01);
+    glLightf(GL_LIGHT5, GL_SPOT_CUTOFF, 40.f);
     glLightfv(GL_LIGHT6, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT6, GL_SPECULAR, light_specular);
-    glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, 0.1);
-    glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 45.f);
+    glLightf(GL_LIGHT6, GL_QUADRATIC_ATTENUATION, 0.01);
+    glLightf(GL_LIGHT6, GL_SPOT_CUTOFF, 40.f);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
@@ -53,6 +53,7 @@ void init() {
     glEnable(GL_LIGHT0);
 }
 
+// Рисую пол
 void drawFloor() {
     glColor3f(1, 1, 1);
     glBegin(GL_QUADS);
@@ -72,6 +73,7 @@ void drawFloor() {
     glEnd();
 }
 
+// Рисую лампы
 void drawLamps() {
     const GLfloat light_pos[] = {0.f, 4.1f, 0.f, 1.f};
 
@@ -109,6 +111,7 @@ void drawLamps() {
     glPopMatrix();
 }
 
+// Рисую машину
 void drawCar() {
     // ------------- body -------------
     glTranslatef(car_x, 0.2f, car_z);
@@ -178,22 +181,6 @@ void drawCar() {
     glVertex3f(1.5f, 0, 0.5f);
     glEnd();
 
-    // headlights
-    const GLfloat headlight_pos[4] = {0.1f, 0.f, 0.f, 1.f};
-    const GLfloat headlight_spot_direction[4] = {1, 0, 0, 1};
-    glPushMatrix();
-    glTranslatef(1.5f, 0.25f, -0.25f);
-    //glutSolidSphere(0.1, 10, 10);
-    glLightfv(GL_LIGHT5, GL_POSITION, headlight_pos);
-    glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, headlight_spot_direction);
-    glPopMatrix();
-    glPushMatrix();
-    glTranslatef(1.5f, 0.25f, 0.25f);
-    //glutSolidSphere(0.1, 10, 10);
-    glLightfv(GL_LIGHT6, GL_POSITION, headlight_pos);
-    glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, headlight_spot_direction);
-    glPopMatrix();
-
     // windscreen
     GLdouble windscreen_norm[3] = {1, 1, 0};
     double len = sqrt(2);
@@ -237,14 +224,40 @@ void drawCar() {
     glPopMatrix();
 }
 
+// Рисую фары
+void drawHeadlights() {
+    glPushMatrix();
+    glTranslatef(car_x, 0.2f, car_z);
+    glRotatef(car_rotate_y, 0, 1, 0);
+
+    // headlights
+    const GLfloat headlight_pos[4] = {0.1f, 0.f, 0.f, 1.f};
+    const GLfloat headlight_spot_direction[4] = {1, 0, 0, 1};
+    glPushMatrix();
+    glTranslatef(1.5f, 0.25f, -0.25f);
+    //glutSolidSphere(0.1, 10, 10);
+    glLightfv(GL_LIGHT5, GL_POSITION, headlight_pos);
+    glLightfv(GL_LIGHT5, GL_SPOT_DIRECTION, headlight_spot_direction);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(1.5f, 0.25f, 0.25f);
+    //glutSolidSphere(0.1, 10, 10);
+    glLightfv(GL_LIGHT6, GL_POSITION, headlight_pos);
+    glLightfv(GL_LIGHT6, GL_SPOT_DIRECTION, headlight_spot_direction);
+    glPopMatrix();
+
+    glPopMatrix();
+}
+
 // Функция вызывается каждый кадр для его отрисовки
 void update() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
-    drawFloor();
+    drawHeadlights();
     drawLamps();
+    drawFloor();
     drawCar();
 
     glFlush();
