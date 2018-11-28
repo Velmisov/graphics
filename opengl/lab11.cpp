@@ -18,13 +18,14 @@ GLuint floor_texture_id;
 GLuint car_texture_id;
 
 void loadTextures() {
-    // floor texture
-    floor_texture_id = SOIL_load_OGL_texture("../floor.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-            SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    // floor texture
+    floor_texture_id = SOIL_load_OGL_texture("../floor.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+            SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 
     // car texture
     car_texture_id = SOIL_load_OGL_texture("../car.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
@@ -79,7 +80,7 @@ void drawFloor() {
 
     glBegin(GL_QUADS);
     bool rotated = false;
-    float step = 0.5f;
+    float step = 0.25f;
     for (float x = -10.f; x < 10.f; x += step) {
         for (float z = -10.f; z < 10.f; z += step) {
             if (rotated)
@@ -161,59 +162,42 @@ void drawCar() {
     glBegin(GL_POLYGON);
     glTexCoord2f(0.64, 0.1); glNormal3f(0, 0, -1); glVertex3f(-1, 0, -0.5f);
     glTexCoord2f(0.64, 0.38); glNormal3f(0, 0, -1); glVertex3f(-1, 1, -0.5f);
-    glTexCoord2f(0.28, 0.38); glNormal3f(0, 0, -1); glVertex3f(1, 1, -0.5f);
-    glTexCoord2f(0.13, 0.2); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0.5f, -0.5f);
-    glTexCoord2f(0.13, 0.1); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0, -0.5f);
+    glTexCoord2f(0.28, 0.37); glNormal3f(0, 0, -1); glVertex3f(1, 1, -0.5f);
+    glTexCoord2f(0.14, 0.22); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0.5f, -0.5f);
+    glTexCoord2f(0.14, 0.1); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0, -0.5f);
     glEnd();
 
     // right
     glBegin(GL_POLYGON);
-    glNormal3f(0, 0, 1);
-    glVertex3f(-1, 0, 0.5f);
-    glNormal3f(0, 0, 1);
-    glVertex3f(-1, 1, 0.5f);
-    glNormal3f(0, 0, 1);
-    glVertex3f(1, 1, 0.5f);
-    glNormal3f(0, 0, 1);
-    glVertex3f(1.5f, 0.5f, 0.5f);
-    glNormal3f(0, 0, 1);
-    glVertex3f(1.5f, 0, 0.5f);
+    glTexCoord2f(0.64, 0.1); glNormal3f(0, 0, 1); glVertex3f(-1, 0, 0.5f);
+    glTexCoord2f(0.64, 0.38); glNormal3f(0, 0, 1); glVertex3f(-1, 1, 0.5f);
+    glTexCoord2f(0.28, 0.37); glNormal3f(0, 0, 1); glVertex3f(1, 1, 0.5f);
+    glTexCoord2f(0.14, 0.22); glNormal3f(0, 0, 1); glVertex3f(1.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.14, 0.1); glNormal3f(0, 0, 1); glVertex3f(1.5f, 0, 0.5f);
     glEnd();
 
     // back
     glBegin(GL_POLYGON);
-    glNormal3f(-1, 0, 0);
-    glVertex3f(-1, 0, -0.5f);
-    glNormal3f(-1, 0, 0);
-    glVertex3f(-1, 1, -0.5f);
-    glNormal3f(-1, 0, 0);
-    glVertex3f(-1, 1, 0.5f);
-    glNormal3f(-1, 0, 0);
-    glVertex3f(-1, 0, 0.5f);
+    glTexCoord2f(0.82, 0.36); glNormal3f(-1, 0, 0); glVertex3f(-1, 0, -0.5f);
+    glTexCoord2f(0.64, 0.36); glNormal3f(-1, 0, 0); glVertex3f(-1, 1, -0.5f);
+    glTexCoord2f(0.64, 0.65); glNormal3f(-1, 0, 0); glVertex3f(-1, 1, 0.5f);
+    glTexCoord2f(0.82, 0.65); glNormal3f(-1, 0, 0); glVertex3f(-1, 0, 0.5f);
     glEnd();
 
     // roof
     glBegin(GL_POLYGON);
-    glNormal3f(0, 1, 0);
-    glVertex3f(-1, 1, -0.5f);
-    glNormal3f(0, 1, 0);
-    glVertex3f(-1, 1, 0.5f);
-    glNormal3f(0, 1, 0);
-    glVertex3f(1, 1, 0.5f);
-    glNormal3f(0, 1, 0);
-    glVertex3f(1, 1, -0.5f);
+    glTexCoord2f(0.64, 0.38); glNormal3f(0, 1, 0); glVertex3f(-1, 1, -0.5f);
+    glTexCoord2f(0.64, 0.63); glNormal3f(0, 1, 0); glVertex3f(-1, 1, 0.5f);
+    glTexCoord2f(0.28, 0.63); glNormal3f(0, 1, 0); glVertex3f(1, 1, 0.5f);
+    glTexCoord2f(0.28, 0.38); glNormal3f(0, 1, 0); glVertex3f(1, 1, -0.5f);
     glEnd();
 
     // front
     glBegin(GL_POLYGON);
-    glNormal3f(1, 0, 0);
-    glVertex3f(1.5f, 0, -0.5f);
-    glNormal3f(1, 0, 0);
-    glVertex3f(1.5f, 0.5f, -0.5f);
-    glNormal3f(1, 0, 0);
-    glVertex3f(1.5f, 0.5f, 0.5f);
-    glNormal3f(1, 0, 0);
-    glVertex3f(1.5f, 0, 0.5f);
+    glTexCoord2f(0, 0.63); glNormal3f(1, 0, 0); glVertex3f(1.5f, 0, -0.5f);
+    glTexCoord2f(0.16, 0.63); glNormal3f(1, 0, 0); glVertex3f(1.5f, 0.5f, -0.5f);
+    glTexCoord2f(0.16, 0.38); glNormal3f(1, 0, 0); glVertex3f(1.5f, 0.5f, 0.5f);
+    glTexCoord2f(0, 0.38); glNormal3f(1, 0, 0); glVertex3f(1.5f, 0, 0.5f);
     glEnd();
 
     // windscreen
@@ -222,14 +206,10 @@ void drawCar() {
     for (int i = 0; i < 3; ++i)
         windscreen_norm[i] /= len;
     glBegin(GL_POLYGON);
-    glNormal3dv(windscreen_norm);
-    glVertex3f(1.5f, 0.5f, -0.5f);
-    glNormal3dv(windscreen_norm);
-    glVertex3f(1, 1, -0.5f);
-    glNormal3dv(windscreen_norm);
-    glVertex3f(1, 1, 0.5f);
-    glNormal3dv(windscreen_norm);
-    glVertex3f(1.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.15, 0.65); glNormal3dv(windscreen_norm); glVertex3f(1.5f, 0.5f, -0.5f);
+    glTexCoord2f(0.27, 0.65); glNormal3dv(windscreen_norm); glVertex3f(1, 1, -0.5f);
+    glTexCoord2f(0.27, 0.37); glNormal3dv(windscreen_norm); glVertex3f(1, 1, 0.5f);
+    glTexCoord2f(0.15, 0.37); glNormal3dv(windscreen_norm); glVertex3f(1.5f, 0.5f, 0.5f);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
