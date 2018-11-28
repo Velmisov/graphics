@@ -1,7 +1,6 @@
 #include <GL/freeglut.h>
 #include <SOIL/SOIL.h>
 #include <math.h>
-#include <cstdio>
 
 const double PI = acos(-1);
 
@@ -15,19 +14,23 @@ float car_x = 0.f;
 float car_z = 0.f;
 float car_rotate_y = 0.f;
 
-GLuint road_texture_id;
+GLuint floor_texture_id;
+GLuint car_texture_id;
 
 void loadTextures() {
     // floor texture
-    road_texture_id = SOIL_load_OGL_texture("../road.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+    floor_texture_id = SOIL_load_OGL_texture("../floor.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
             SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    // car texture
+    car_texture_id = SOIL_load_OGL_texture("../car.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+            SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 }
 
-// Функция вызывается перед вхождением в главный цикл
 void init() {
     glClearColor(0, 0, 0, 1);
 
@@ -69,11 +72,10 @@ void init() {
     glEnable(GL_LIGHT0);
 }
 
-// Рисую пол
 void drawFloor() {
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D, road_texture_id);
+    glBindTexture(GL_TEXTURE_2D, floor_texture_id);
 
     glBegin(GL_QUADS);
     bool rotated = false;
@@ -109,7 +111,6 @@ void drawFloor() {
     glDisable(GL_TEXTURE_2D);
 }
 
-// Рисую лампы
 void drawLamps() {
     const GLfloat light_pos[] = {0.f, 4.1f, 0.f, 1.f};
 
@@ -147,24 +148,22 @@ void drawLamps() {
     glPopMatrix();
 }
 
-// Рисую машину
 void drawCar() {
     // ------------- body -------------
     glTranslatef(car_x, 0.2f, car_z);
     glRotatef(car_rotate_y, 0, 1, 0);
 
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D, car_texture_id);
+
     // left
     glBegin(GL_POLYGON);
-    glNormal3f(0, 0, -1);
-    glVertex3f(-1, 0, -0.5f);
-    glNormal3f(0, 0, -1);
-    glVertex3f(-1, 1, -0.5f);
-    glNormal3f(0, 0, -1);
-    glVertex3f(1, 1, -0.5f);
-    glNormal3f(0, 0, -1);
-    glVertex3f(1.5f, 0.5f, -0.5f);
-    glNormal3f(0, 0, -1);
-    glVertex3f(1.5f, 0, -0.5f);
+    glTexCoord2f(0.64, 0.1); glNormal3f(0, 0, -1); glVertex3f(-1, 0, -0.5f);
+    glTexCoord2f(0.64, 0.38); glNormal3f(0, 0, -1); glVertex3f(-1, 1, -0.5f);
+    glTexCoord2f(0.28, 0.38); glNormal3f(0, 0, -1); glVertex3f(1, 1, -0.5f);
+    glTexCoord2f(0.13, 0.2); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0.5f, -0.5f);
+    glTexCoord2f(0.13, 0.1); glNormal3f(0, 0, -1); glVertex3f(1.5f, 0, -0.5f);
     glEnd();
 
     // right
@@ -233,6 +232,8 @@ void drawCar() {
     glVertex3f(1.5f, 0.5f, 0.5f);
     glEnd();
 
+    glDisable(GL_TEXTURE_2D);
+
     // ------------- wheels -------------
     glColor3f(0, 0, 0);
     // left front
@@ -260,7 +261,6 @@ void drawCar() {
     glPopMatrix();
 }
 
-// Рисую фары
 void drawHeadlights() {
     glPushMatrix();
     glTranslatef(car_x, 0.2f, car_z);
@@ -285,7 +285,6 @@ void drawHeadlights() {
     glPopMatrix();
 }
 
-// Функция вызывается каждый кадр для его отрисовки
 void update() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -300,7 +299,6 @@ void update() {
     glutSwapBuffers();
 }
 
-// Установка прожектора в камере
 void setCameraLight() {
     GLint viewport[4];
     GLdouble modelview_mat[16];
@@ -332,7 +330,6 @@ void setCameraLight() {
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
 }
 
-// Обновление камеры
 void updateCamera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -347,7 +344,6 @@ void updateCamera() {
     setCameraLight();
 }
 
-// Управление мышкой
 void mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) {
         switch (button) {
@@ -380,7 +376,6 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
-// Управление машинкой
 void driving(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
@@ -405,7 +400,6 @@ void driving(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-// Управление клавиатурой
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'a':
@@ -458,13 +452,11 @@ void keyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
-// Вызывается при изменении размеров окна
 void reshape(int width, int height) {
     w = width;
     h = height;
     
     glViewport(0, 0, w, h);
-
     updateCamera();
 }
 
@@ -472,15 +464,12 @@ int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(800, 800);
-
     glutCreateWindow("texture and lighting");
 
     init();
 
     glutReshapeFunc(reshape);
-
     glutDisplayFunc(update);
-
     glutSpecialFunc(driving);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(mouse);
