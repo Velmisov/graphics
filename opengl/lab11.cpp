@@ -24,11 +24,11 @@ void loadTextures() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     // floor texture
-    floor_texture_id = SOIL_load_OGL_texture("../floor.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+    floor_texture_id = SOIL_load_OGL_texture("../data/floor.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
             SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 
     // car texture
-    car_texture_id = SOIL_load_OGL_texture("../car.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+    car_texture_id = SOIL_load_OGL_texture("../data/car.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
             SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 }
 
