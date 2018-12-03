@@ -385,7 +385,7 @@ void keyboard(unsigned char key, int x, int y) {
         case 'a':
             camera_rotate_y += 5;
             if (camera_rotate_y > 360)
-                car_rotate_y -= 360;
+                camera_rotate_y -= 360;
             updateCamera();
             break;
         case 'd':
